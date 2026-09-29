@@ -18,15 +18,17 @@ export async function GET(
     // 1. Verify access: Check if there's a paid purchase OR a valid signed token
     let isAuthorized = false;
 
-    // Check purchase record
-    const { data: purchase } = await supabase
+    // Check all paid purchases for this assessment
+    const { data: purchases } = await supabase
       .from("purchases")
-      .select("payment_status")
+      .select("product, payment_status")
       .eq("assessment_id", assessmentId)
-      .eq("payment_status", "paid")
-      .maybeSingle();
+      .eq("payment_status", "paid");
 
-    if (purchase?.payment_status === "paid") {
+    const hasPurchasedAny = Boolean(purchases && purchases.length > 0);
+    const hasKit = purchases?.some((p: any) => p.product === "kit_299") || false;
+
+    if (hasPurchasedAny) {
       isAuthorized = true;
     } else if (token) {
       const tokenVerification = verifyReportToken(token);
@@ -89,6 +91,8 @@ export async function GET(
       report: reportData,
       userName,
       assessmentId,
+      hasKit,
+      purchasedProducts: purchases?.map((p: any) => p.product) || [],
     });
   } catch (err: any) {
     console.error("[Report Access Route Error]", err);

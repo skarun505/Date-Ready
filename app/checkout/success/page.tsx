@@ -32,6 +32,12 @@ function CheckoutSuccessContent() {
         if (data.isPaid) {
           setStatus("paid");
           if (data.token) setToken(data.token);
+          if (data.product === "kit_299") {
+            try {
+              localStorage.setItem(`dateready_kit_unlocked_${data.assessmentId || assessmentId}`, "true");
+              localStorage.setItem("dateready_has_kit", "true");
+            } catch (e) {}
+          }
           clearInterval(intervalId);
 
           try {
@@ -89,6 +95,19 @@ function CheckoutSuccessContent() {
   const handleSimulatePaymentWebhook = async () => {
     setIsSimulating(true);
     try {
+      // Determine if this is a kit_299 or report_99 purchase
+      let detectedProduct = "report_99";
+      let detectedAmount = 9900;
+
+      try {
+        const statusRes = await fetch(`/api/purchase/status?purchaseId=${encodeURIComponent(purchaseId)}`);
+        const statusData = await statusRes.json();
+        if (statusData.product === "kit_299") {
+          detectedProduct = "kit_299";
+          detectedAmount = 29900;
+        }
+      } catch (e) {}
+
       const res = await fetch("/api/webhooks/dodo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,12 +116,12 @@ function CheckoutSuccessContent() {
           type: "payment.succeeded",
           data: {
             payment_id: `dodo_sim_pay_${Date.now()}`,
-            amount: 9900,
+            amount: detectedAmount,
             currency: "INR",
             metadata: {
               purchase_id: purchaseId,
               assessment_id: assessmentId,
-              product: "report_99",
+              product: detectedProduct,
             },
           },
         }),

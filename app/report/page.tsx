@@ -33,9 +33,19 @@ function ReportContent() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [requiresPayment, setRequiresPayment] = useState<boolean>(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState<boolean>(false);
+  const [hasKit, setHasKit] = useState<boolean>(false);
 
   useEffect(() => {
     track("report_viewed", { assessmentId });
+
+    // Check local storage for kit purchase
+    const localKitUnlocked = typeof window !== "undefined" && (
+      localStorage.getItem(`dateready_kit_unlocked_${assessmentId}`) === "true" ||
+      localStorage.getItem("dateready_has_kit") === "true"
+    );
+    if (localKitUnlocked) {
+      setHasKit(true);
+    }
 
     const fetchReport = async () => {
       try {
@@ -55,6 +65,9 @@ function ReportContent() {
         if (data.report) {
           setReportData(data.report);
           if (data.userName) setUserName(data.userName);
+          if (data.hasKit || localKitUnlocked) {
+            setHasKit(true);
+          }
         }
       } catch (e) {
         console.error("Failed to load report", e);
@@ -384,8 +397,53 @@ function ReportContent() {
           </section>
         )}
 
-        {/* 7. Confidence Kit Upsell */}
-        <UpsellBanner onUpgrade={handleUpgradeKit} isLoading={isUpgrading} />
+        {/* 7. Confidence Kit Upsell or Unlocked Badge */}
+        {hasKit ? (
+          <div className="bg-gradient-to-br from-[#1C1C2B] to-[#14141F] border border-emerald-500/40 rounded-3xl p-5 my-8 relative overflow-hidden shadow-[0_8px_32px_rgba(61,220,151,0.12)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/40 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                Confidence Kit Active
+              </span>
+              <span className="text-[11px] font-bold text-[#3DDC97]">Unlocked • ₹299 Package</span>
+            </div>
+
+            <h3 className="text-lg font-bold text-white font-display mb-1.5">
+              The Complete Confidence Kit
+            </h3>
+            <p className="text-xs text-[#9A9AB0] leading-relaxed mb-4">
+              Your comprehensive upgrade is fully unlocked. Access your 14 advanced real-world conversation drills, dating app photo audit templates, and high-stakes social calibration.
+            </p>
+
+            <div className="space-y-2 mb-4 bg-[#0B0B12]/70 rounded-2xl p-3.5 border border-[#2A2A3D]">
+              <div className="flex items-center gap-2 text-xs text-white">
+                <Zap className="w-4 h-4 text-[#FF4D8D] shrink-0" />
+                <span>14 Advanced Conversation & Opener Drills</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-white">
+                <Zap className="w-4 h-4 text-[#7C5CFF] shrink-0" />
+                <span>Dating App Photo & Bio Audit Checklist</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-white">
+                <Zap className="w-4 h-4 text-[#3DDC97] shrink-0" />
+                <span>911 Date-Night Emergency Conversation Rescue Pack</span>
+              </div>
+            </div>
+
+            <Button
+              variant="brand"
+              size="md"
+              fullWidth
+              onClick={() => setActiveTab("drills")}
+              icon={<ArrowRight className="w-4 h-4" />}
+            >
+              Explore Your Field Drills
+            </Button>
+          </div>
+        ) : (
+          <UpsellBanner onUpgrade={handleUpgradeKit} isLoading={isUpgrading} />
+        )}
 
         {/* Footer */}
         <footer className="text-center pt-4 pb-8 border-t border-[#2A2A3D]/40 text-xs text-[#6A6A80] space-y-2">
