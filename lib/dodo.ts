@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { getSiteUrl } from "./url";
 
 export interface CreateCheckoutParams {
   purchaseId: string;
@@ -57,7 +58,7 @@ export async function createDodoCheckoutSession(params: CreateCheckoutParams): P
   }
 
   // Simulated development checkout redirect
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = getSiteUrl();
   const simulatedUrl = `${baseUrl}/checkout/success?purchaseId=${encodeURIComponent(
     params.purchaseId
   )}&assessmentId=${encodeURIComponent(params.assessmentId)}&simulated=true`;

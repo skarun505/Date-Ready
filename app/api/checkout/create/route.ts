@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { serverClient } from "@/lib/supabase/server";
 import { createDodoCheckoutSession, PRODUCT_PRICES } from "@/lib/dodo";
+import { getSiteUrl } from "@/lib/url";
 
 const CheckoutCreateSchema = z.object({
   assessmentId: z.string().min(1),
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
       terms_version: termsVersion,
     });
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const siteUrl = getSiteUrl();
     const returnUrl = `${siteUrl}/checkout/success?purchaseId=${purchaseId}&assessmentId=${assessmentId}`;
 
     const session = await createDodoCheckoutSession({

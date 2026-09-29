@@ -1,5 +1,7 @@
 // lib/email.ts - Automated Email Dispatch Engine (Resend API + Dev Fallback)
 
+import { getSiteUrl } from "./url";
+
 interface SendAssessmentCompleteParams {
   email: string;
   name?: string;
@@ -69,7 +71,7 @@ async function sendEmailViaResend({
  * 1. Email sent immediately when user completes assessment and provides email
  */
 export async function sendAssessmentCompleteEmail(params: SendAssessmentCompleteParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = getSiteUrl();
   const name = params.name || "there";
   const resultUrl = `${siteUrl}/result?id=${encodeURIComponent(params.assessmentId)}${
     params.token ? `&t=${encodeURIComponent(params.token)}` : ""
@@ -127,7 +129,7 @@ export async function sendAssessmentCompleteEmail(params: SendAssessmentComplete
  * 2. Email sent when payment confirms, delivering the permanent report link + PDF access
  */
 export async function sendReportUnlockedEmail(params: SendReportUnlockedParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = getSiteUrl();
   const name = params.name || "there";
   const reportUrl = `${siteUrl}/report?id=${encodeURIComponent(params.assessmentId)}${
     params.token ? `&token=${encodeURIComponent(params.token)}` : ""
