@@ -16,7 +16,10 @@ import {
 import confetti from "canvas-confetti";
 import { ScoreRing } from "@/components/result/ScoreRing";
 import { DimensionBar } from "@/components/result/DimensionBar";
+import { BlindspotTeaser } from "@/components/result/BlindspotTeaser";
 import { LockedSection } from "@/components/result/LockedSection";
+import { ComparisonGrid } from "@/components/result/ComparisonGrid";
+import { ValueAnchorCard } from "@/components/result/ValueAnchorCard";
 import { PaywallBar } from "@/components/result/PaywallBar";
 import { ShareButton } from "@/components/result/ShareButton";
 import { TestimonialsSection } from "@/components/result/TestimonialsSection";
@@ -35,7 +38,7 @@ function ResultContent() {
   const [scoreData, setScoreData] = useState<any>(null);
   const [userName, setUserName] = useState<string>("there");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -219,7 +222,7 @@ function ResultContent() {
         </div>
 
         {/* 5. One Free Insight (Tied to primary growth area) */}
-        <div className="bg-gradient-to-br from-[#1C1C2B] to-[#14141F] border border-[#3DDC97]/40 rounded-3xl p-5 mb-8 shadow-[0_4px_24px_rgba(61,220,151,0.1)]">
+        <div className="bg-gradient-to-br from-[#1C1C2B] to-[#14141F] border border-[#3DDC97]/40 rounded-3xl p-5 mb-6 shadow-[0_4px_24px_rgba(61,220,151,0.1)]">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider bg-[#3DDC97]/20 text-[#3DDC97] px-2.5 py-0.5 rounded-full border border-[#3DDC97]/30">
               Free Key Insight
@@ -241,7 +244,13 @@ function ResultContent() {
           </div>
         </div>
 
-        {/* 6. Money Quote */}
+        {/* 6. Subconscious Dating Blindspot (High-Urgency Teaser) */}
+        <BlindspotTeaser
+          primaryWeakness={scoreData.primaryWeakness as Dimension}
+          onUnlockClick={handleOpenCheckout}
+        />
+
+        {/* 7. Money Quote */}
         <div className="text-center py-4 px-2 my-2">
           <p className="text-base sm:text-lg font-bold text-white font-display leading-snug">
             "Your score isn't the problem. <br />
@@ -249,14 +258,20 @@ function ResultContent() {
           </p>
         </div>
 
-        {/* 7. Locked Section Previews */}
+        {/* 8. Locked Section Previews (Scripts, Drills, 7-Day Plan) */}
         <LockedSection
           primaryWeakness={scoreData.primaryWeakness as Dimension}
           secondaryWeakness={scoreData.secondaryWeakness as Dimension}
           onUnlockClick={handleOpenCheckout}
         />
 
-        {/* Verified Reader Testimonials */}
+        {/* 9. Free vs ₹99 Comparison Grid */}
+        <ComparisonGrid onUnlockClick={handleOpenCheckout} />
+
+        {/* 10. The Dating Math (Cost of a Bad Date vs ₹99) */}
+        <ValueAnchorCard onUnlockClick={handleOpenCheckout} />
+
+        {/* 11. Verified Reader Testimonials */}
         <TestimonialsSection />
 
         {/* FAQ Accordion */}
