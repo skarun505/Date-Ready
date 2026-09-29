@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DateReady Readiness Report — {{NAME}}</title>
+  <style>
+    /* ─── Page Setup ──────────────────────────────────────────────── */
+    @page {
+      size: A4;
+      margin: 14mm 16mm;
+    }
+    @page :first {
+      margin-top: 0;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* ─── Google Fonts (print fallback stack) ─────────────────────── */
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+      color: #1a1a2e;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ─── Cover / Hero Block ──────────────────────────────────────── */
+    .cover {
+      background: linear-gradient(135deg, #0b0b12 0%, #1a0d2e 60%, #0d1a2e 100%);
+      color: white;
+      padding: 24mm 16mm 18mm;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+    .cover::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -80px;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(255,77,141,0.35) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cover::after {
+      content: "";
+      position: absolute;
+      bottom: -40px;
+      left: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(124,92,255,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cover-inner { position: relative; z-index: 2; }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff4d8d, #7c5cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-name span { color: #ff4d8d; }
+    .brand-tagline {
+      font-size: 8pt;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+
+    .cover-headline {
+      font-size: 28pt;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .cover-headline-accent { color: #ff4d8d; }
+    .cover-sub {
+      font-size: 11pt;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 32px;
+    }
+
+    /* Score Hero */
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .score-ring-wrap {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .score-ring-bg {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid rgba(255,255,255,0.1);
+      position: absolute;
+    }
+    .score-ring-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid transparent;
+      border-top-color: #ff4d8d;
+      border-right-color: #ff4d8d;
+      position: absolute;
+      transform: rotate(-90deg);
+    }
+    .score-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .score-number {
+      font-size: 24pt;
+      font-weight: 900;
+      color: #ff4d8d;
+      line-height: 1;
+    }
+    .score-denom {
+      font-size: 8pt;
+      color: rgba(255,255,255,0.5);
+    }
+    .score-info { flex: 1; }
+    .score-profile-badge {
+      display: inline-block;
+      background: rgba(255,77,141,0.2);
+      border: 1px solid rgba(255,77,141,0.4);
+      color: #ff4d8d;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+    }
+    .score-profile-name {
+      font-size: 16pt;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .score-profile-desc {
+      font-size: 9pt;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+
+    /* Prepared for strip */
+    .prepared-strip {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9pt;
+      color: rgba(255,255,255,0.6);
+    }
+    .prepared-name {
+      font-size: 11pt;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* ─── Main Body ───────────────────────────────────────────────── */
+    .body-section {
+      padding: 14mm 16mm;
+    }
+
+    /* Section titles */
+    .section-title {
+      font-size: 12pt;
+      font-weight: 800;
+      color: #0b0b12;
+      letter-spacing: -0.3px;
+      padding-left: 12px;
+      border-left: 4px solid #ff4d8d;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      page-break-after: avoid;
+    }
+    .section-title.purple { border-left-color: #7c5cff; }
+    .section-title.green  { border-left-color: #3ddc97; }
+
+    /* ─── Dimension bars ──────────────────────────────────────────── */
+    .dim-table {
+      width: 100%;
+      margin-bottom: 6px;
+    }
+    .dim-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+    .dim-label {
+      width: 130px;
+      font-size: 9pt;
+      font-weight: 600;
+      color: #3a3a5a;
+      flex-shrink: 0;
+    }
+    .dim-bar-wrap {
+      flex: 1;
+      height: 8px;
+      background: #eeeef6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .dim-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #ff4d8d, #7c5cff);
+    }
+    .dim-bar-fill.green {
+      background: linear-gradient(90deg, #3ddc97, #1ab078);
+    }
+    .dim-score {
+      width: 44px;
+      text-align: right;
+      font-size: 9pt;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .dim-tag {
+      font-size: 7.5pt;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    .dim-tag.strength {
+      background: rgba(61,220,151,0.12);
+      color: #1ab078;
+      border: 1px solid rgba(61,220,151,0.3);
+    }
+    .dim-tag.growth {
+      background: rgba(255,77,141,0.1);
+      color: #e03070;
+      border: 1px solid rgba(255,77,141,0.25);
+    }
+
+    /* ─── Cards ───────────────────────────────────────────────────── */
+    .card {
+      background: #f9f9fd;
+      border: 1px solid #e4e4f0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+    .card.pink-tint {
+      background: #fff5f9;
+      border-color: #ffd6e8;
+    }
+    .card.purple-tint {
+      background: #f5f4ff;
+      border-color: #d8d4ff;
+    }
+    .card.green-tint {
+      background: #f2fdf7;
+      border-color: #c8f0dc;
+    }
+
+    .card-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0b0b12;
+      margin-bottom: 5px;
+    }
+    .card-body {
+      font-size: 9.5pt;
+      color: #4a4a6a;
+      line-height: 1.55;
+    }
+    .card-label {
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #ff4d8d;
+      margin-bottom: 4px;
+    }
+    .card-label.purple { color: #7c5cff; }
+    .card-label.green  { color: #1ab078; }
+
+    /* Strength items */
+    .strength-item {
+      padding: 10px 14px;
+      border: 1px solid #e4e4f0;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: white;
+      page-break-inside: avoid;
+    }
+    .strength-title { font-size: 10pt; font-weight: 700; color: #0b0b12; }
+    .strength-tagline { font-size: 8.5pt; font-weight: 600; color: #1ab078; margin-bottom: 3px; }
+    .strength-desc { font-size: 9pt; color: #4a4a6a; line-height: 1.5; }
+    .strength-leverage { font-size: 8.5pt; color: #7c5cff; font-style: italic; margin-top: 3px; }
+
+    /* Exercise steps */
+    .exercise-card {
+      background: white;
+      border: 1px solid #e4e4f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+    .exercise-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .exercise-name { font-size: 10pt; font-weight: 700; color: #0b0b12; }
+    .exercise-time {
+      font-size: 8pt;
+      font-weight: 600;
+      color: #ff4d8d;
+      background: rgba(255,77,141,0.08);
+      border: 1px solid rgba(255,77,141,0.2);
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+    .exercise-step {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 9pt;
+      color: #4a4a6a;
+    }
+    .step-num { font-weight: 700; color: #7c5cff; flex-shrink: 0; }
+    .exercise-why {
+      font-size: 8.5pt;
+      color: #6a6a90;
+      font-style: italic;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #eee;
+    }
+
+    /* 7-Day Plan */
+    .day-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+    .day-badge {
+      background: linear-gradient(135deg, #ff4d8d22, #7c5cff22);
+      border: 1px solid rgba(124,92,255,0.25);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+    .day-num { font-size: 14pt; font-weight: 900; color: #7c5cff; line-height: 1; }
+    .day-label { font-size: 7pt; color: #9a9ab0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .day-content { display: flex; flex-direction: column; justify-content: center; }
+    .day-theme { font-size: 9.5pt; font-weight: 700; color: #0b0b12; margin-bottom: 2px; }
+    .day-task { font-size: 9pt; color: #4a4a6a; line-height: 1.45; }
+
+    /* Bridge / Quote highlight */
+    .bridge-block {
+      background: linear-gradient(135deg, #fff5f9, #f5f4ff);
+      border: 1px solid rgba(255,77,141,0.2);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+    .bridge-quote {
+      font-size: 10.5pt;
+      font-style: italic;
+      color: #3a2a5a;
+      line-height: 1.6;
+    }
+
+    /* Quick-stat row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: #f5f4ff;
+      border: 1px solid #d8d4ff;
+      border-radius: 12px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .stat-num { font-size: 16pt; font-weight: 900; color: #7c5cff; line-height: 1; }
+    .stat-label { font-size: 8pt; color: #6a6a90; margin-top: 3px; }
+
+    /* ─── Footer ──────────────────────────────────────────────────── */
+    .report-footer {
+      border-top: 1.5px solid #e4e4f0;
+      padding-top: 10px;
+      margin-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8pt;
+      color: #9a9ab0;
+      page-break-inside: avoid;
+    }
+    .footer-brand { font-weight: 700; color: #ff4d8d; }
+
+    /* ─── Page break helpers ──────────────────────────────────────── */
+    .page-break { page-break-after: always; }
+    .no-break { page-break-inside: avoid; }
+
+    /* ─── Utility ─────────────────────────────────────────────────── */
+    .text-pink   { color: #ff4d8d; }
+    .text-purple { color: #7c5cff; }
+    .text-green  { color: #1ab078; }
+    .bold { font-weight: 700; }
+    .mt-0 { margin-top: 0; }
+    .mb-4 { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 1 — COVER                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="brand-logo">
+      <div class="brand-icon">💫</div>
+      <div>
+        <div class="brand-name">Date<span>Ready</span></div>
+        <div class="brand-tagline">by Subix • Confidential Report</div>
+      </div>
+    </div>
+
+    <div class="cover-headline">
+      Your Dating<br>
+      <span class="cover-headline-accent">Readiness Blueprint</span>
+    </div>
+    <div class="cover-sub">A personalised deep-dive into your confidence, patterns, and growth plan</div>
+
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-ring-wrap">
+        <div class="score-ring-bg"></div>
+        <div class="score-ring-fill" style="transform: rotate(calc(-90deg + {{SCORE_DEG}}deg));"></div>
+        <div class="score-center">
+          <div class="score-number">{{SCORE}}</div>
+          <div class="score-denom">/100</div>
+        </div>
+      </div>
+      <div class="score-info">
+        <div class="score-profile-badge">Profile Archetype</div>
+        <div class="score-profile-name">{{PROFILE}}</div>
+        <div class="score-profile-desc">{{PROFILE_INTRO}}</div>
+      </div>
+    </div>
+
+    <div class="prepared-strip">
+      <div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;">Prepared for</div>
+        <div class="prepared-name">{{NAME}}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:8pt;color:rgba(255,255,255,0.45);">Assessed on</div>
+        <div style="color:white;font-weight:600;font-size:9pt;">{{DATE}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!--  PAGE 2 — DIMENSIONS + STRENGTHS                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div class="body-section">
+
+  <!-- Quick stat strip -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num">{{SCORE}}</div>
+      <div class="stat-label">Overall Score</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:#ff4d8d;">{{TOTAL_Q}}</div>
+      <div class="stat-label">Questions Answered</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:#1ab078;">{{TOP_DIM_SCORE}}</div>
+      <div class="stat-label">Best Dimension</div>
+    </div>
+  </div>
+
+  <!-- ── Dimension Breakdown ─────────────────────────────────────── -->
+  <div class="section-title">Dimension Breakdown</div>
+
+  <div class="dim-table">
+    <div class="dim-row">
+      <div class="dim-label">Approach Confidence</div>
+      <div class="dim-bar-wrap">
+        <div class="dim-bar-fill {{APPROACH_CLASS}}" style="width:{{APPROACH_PCT}}%;"></div>
+      </div>
+      <div class="dim-score">{{APPROACH_SCORE}}/20</div>
+      <div class="dim-tag {{APPROACH_TAG_CLASS}}">{{APPROACH_TAG}}</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">Conversation</div>
+      <div class="dim-bar-wrap">
+        <div class="dim-bar-fill {{CONV_CLASS}}" style="width:{{CONV_PCT}}%;"></div>
+      </div>
+      <div class="dim-score">{{CONVERSATION_SCORE}}/20</div>
+      <div class="dim-tag {{CONV_TAG_CLASS}}">{{CONV_TAG}}</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">Social Comfort</div>
+      <div class="dim-bar-wrap">
+        <div class="dim-bar-fill {{SOCIAL_CLASS}}" style="width:{{SOCIAL_PCT}}%;"></div>
+      </div>
+      <div class="dim-score">{{SOCIAL_SCORE}}/20</div>
+      <div class="dim-tag {{SOCIAL_TAG_CLASS}}">{{SOCIAL_TAG}}</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">Emotional Resilience</div>
+      <div class="dim-bar-wrap">
+        <div class="dim-bar-fill {{RESILIENCE_CLASS}}" style="width:{{RESILIENCE_PCT}}%;"></div>
+      </div>
+      <div class="dim-score">{{RESILIENCE_SCORE}}/20</div>
+      <div class="dim-tag {{RESILIENCE_TAG_CLASS}}">{{RESILIENCE_TAG}}</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">Self-Presentation</div>
+      <div class="dim-bar-wrap">
+        <div class="dim-bar-fill {{PRES_CLASS}}" style="width:{{PRES_PCT}}%;"></div>
+      </div>
+      <div class="dim-score">{{PRESENTATION_SCORE}}/20</div>
+      <div class="dim-tag {{PRES_TAG_CLASS}}">{{PRES_TAG}}</div>
+    </div>
+  </div>
+
+  <!-- ── Core Strengths ─────────────────────────────────────────── -->
+  <div class="section-title green">Core Strengths</div>
+  {{STRENGTHS_BLOCK}}
+
+  <!-- ── Primary Growth Focus ───────────────────────────────────── -->
+  <div class="section-title">Primary Bottleneck: {{PRIMARY_FOCUS}}</div>
+
+  <div class="card pink-tint">
+    <div class="card-label">What It Looks Like In Practice</div>
+    <div class="card-body">{{PRIMARY_WHAT}}</div>
+  </div>
+
+  <div class="card purple-tint">
+    <div class="card-label purple">Why Your Nervous System Does This</div>
+    <div class="card-body">{{PRIMARY_WHY}}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Score Band Analysis</div>
+    <div class="card-body">{{PRIMARY_BAND}}</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── Pattern Bridge ─────────────────────────────────────────── -->
+  <div class="section-title purple">How Your Patterns Connect</div>
+  <div class="bridge-block">
+    <div class="bridge-quote">{{BRIDGE}}</div>
+  </div>
+
+  <!-- ── Secondary Focus ────────────────────────────────────────── -->
+  <div class="section-title">Secondary Focus: {{SECONDARY_FOCUS}}</div>
+  <div class="card">
+    <div class="card-title">{{SECONDARY_TITLE}}</div>
+    <div class="card-body">{{SECONDARY_WHAT}}</div>
+  </div>
+  <div class="card green-tint">
+    <div class="card-label green">Golden Rule</div>
+    <div class="card-body bold">{{SECONDARY_TIP}}</div>
+  </div>
+
+  <!-- ── Field Exercises ────────────────────────────────────────── -->
+  <div class="section-title">Targeted Field Drills</div>
+  {{EXERCISES_BLOCK}}
+
+  <!-- ── 7-Day Plan ─────────────────────────────────────────────── -->
+  <div class="section-title purple">Your 7-Day Action Blueprint</div>
+  {{PLAN_7DAY}}
+
+  <!-- ── Footer ─────────────────────────────────────────────────── -->
+  <div class="report-footer">
+    <div><span class="footer-brand">DateReady</span> by Subix &nbsp;•&nbsp; dateready.subix.in</div>
+    <div>Confidential • Not a clinical assessment • 18+ only</div>
+  </div>
+
+</div>
+</body>
+</html>
